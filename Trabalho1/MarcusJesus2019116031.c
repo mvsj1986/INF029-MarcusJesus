@@ -134,12 +134,88 @@ DataQuebrada quebraData(char data[])
   return dq;
 }
 
+int padronizarAno(int ano)
+{
+  int nAno;
+  
+  if (ano < 100) {
+    nAno = ano + 2000;
+  } else {
+    nAno = ano;
+  }
+
+  return nAno;
+}
+
+int isBissexto(int ano)
+{
+  if (ano % 4 == 0 && (ano % 100 != 0 || ano % 400 == 0)){
+    return 1;
+  }
+  else{
+    return 0;
+  }
+}
+
+int validadorData(DataQuebrada dq)
+{
+  if (dq.iDia < 29){
+    return dq.valido;
+  } else if (dq.iDia == 29 && dq.iMes == 2){
+    if (isBissexto(dq.iAno) == 1) return dq.valido;
+  } else if (dq.iDia < 31 && dq.iMes != 2){
+    return dq.valido;
+  } else if (dq.iDia == 31 && (dq.iMes == 1 || dq.iMes == 3 || dq.iMes == 5 || dq.iMes == 7 || dq.iMes == 8 || dq.iMes == 10 || dq.iMes == 12)){
+    return dq.valido;
+  }
+  return 0;
+}
+
+int mesAnterior(DataQuebrada dq)
+{
+  int mesAnt;
+
+  if (dq.iMes == 1){
+    mesAnt = 12;
+  } else {
+    mesAnt = dq.iMes - 1;
+  }
+
+  if (mesAnt == 2 && isBissexto(dq.iAno) == 0){
+    return 28;
+  } else if (mesAnt == 2 && isBissexto(dq.iAno) == 1){
+    return 29;
+  } else if (mesAnt == 4 || mesAnt == 6 || mesAnt == 9 || mesAnt == 11){
+    return 30;
+  } else if (mesAnt == 1 || mesAnt == 3 || mesAnt == 5 || mesAnt == 7 || mesAnt == 8 || mesAnt == 10 || mesAnt == 12){
+    return 31;
+  }
+
+  return -1;
+}
+
+char capitalizarChar(char letra)
+{
+  if (letra > 96 && letra < 123) return letra - 32;
+  else return letra;
+}
+
+void capitalizarSting(char texto[])
+{
+  //97 e 122 - 32 (65 e 90)
+  for (int i = 0; i != '\0'; i++){
+    if (texto[i] > 96 && texto[i] < 123){
+      texto[i] = capitalizarChar(texto[i]);
+    }
+  }
+}
+
 /*
  Q1 = validar data
 @objetivo
     Validar uma data
 @entrada
-    uma string data. Formatos que devem ser aceitos: dd/mm/aaaa, onde dd = dia, mm = mês, e aaaa, igual ao ano. dd em mm podem ter apenas um digito, e aaaa podem ter apenas dois digitos.
+    uma string data. Formatos que devem ser aceitos: dd/mm/aaaa, onde dd = dia, mm = mês, e aaaa, igual ao ano. dd e mm podem ter apenas um digito, e aaaa podem ter apenas dois digitos.
 @saida
     0 -> se data inválida
     1 -> se data válida
@@ -149,18 +225,25 @@ DataQuebrada quebraData(char data[])
  */
 int q1(char data[])
 {
-  int datavalida = 1;
+  DataQuebrada dataFim;
 
   //quebrar a string data em strings sDia, sMes, sAno
-  //DataQuebrada dataQuebrada = quebraData(data);
-  //if (dataQuebrada.valido == 0) return 0;
+  dataFim = quebraData(data);
 
-  //printf("%s\n", data);
+  //verificar se dados passados estão num formato válidos.
+  if (dataFim.valido == 0) return 0;
 
-  if (datavalida)
-      return 1;
-  else
-      return 0;
+  //padronizando o ano (de apenas dois digitos) entre 2000 e 2099
+  dataFim.iAno = padronizarAno(dataFim.iAno);
+
+  //verificação da validade individual dos componentes da data já que os dados recebidos tem formato válido.
+  if (dataFim.iDia > 31 || dataFim.iDia < 1) dataFim.valido = 0;
+  if (dataFim.iMes > 12 || dataFim.iMes < 1) dataFim.valido = 0;
+
+  //verificar válidade para o mês.
+  dataFim.valido = validadorData(dataFim);
+  
+  return dataFim.valido;
 }
 
 /*
@@ -182,6 +265,7 @@ DiasMesesAnos q2(char datainicial[], char datafinal[])
 
     //calcule os dados e armazene nas três variáveis a seguir
     DiasMesesAnos dma;
+    DataQuebrada dq1, dq2;
 
     if (q1(datainicial) == 0){
       dma.retorno = 2;
@@ -191,16 +275,49 @@ DiasMesesAnos q2(char datainicial[], char datafinal[])
       return dma;
     }else{
       //verifique se a data final não é menor que a data inicial
+      dq1 = quebraData(datainicial);
+      dq1.iAno = padronizarAno(dq1.iAno);
+      dq2 = quebraData(datafinal);
+      dq2.iAno = padronizarAno(dq2.iAno);
 
-      //calcule a distancia entre as datas
+      if (dq1.iAno > dq2.iAno){
+        dma.retorno = 4;
+        return dma;
+      } else if (dq1.iAno == dq2.iAno){
+        if (dq1.iMes > dq2.iMes){
+          dma.retorno = 4;
+          return dma;
+        } else if (dq1.iMes == dq2.iMes && dq1.iDia > dq2.iDia){
+          dma.retorno = 4;
+          return dma;
+        }
+      }
+      
+      dma.qtdAnos = dq2.iAno - dq1.iAno;
+      
+      if(dq1.iMes > dq2.iMes){
+        dma.qtdAnos--;
+        dma.qtdMeses = 12 - (dq1.iMes - dq2.iMes);
+      } else {
+        dma.qtdMeses = dq2.iMes - dq1.iMes;
+      }
 
-
-      //se tudo der certo
+      if(dq1.iDia > dq2.iDia){
+        if(dma.qtdMeses == 0){
+          dma.qtdAnos--;
+          dma.qtdMeses = 11;
+          dma.qtdDias = mesAnterior(dq2) - (dq1.iDia - dq2.iDia);
+        } else {
+          dma.qtdMeses--;
+          dma.qtdDias = mesAnterior(dq2) - (dq1.iDia - dq2.iDia);
+        }
+      } else {
+        dma.qtdDias = dq2.iDia - dq1.iDia;
+      }
+      
       dma.retorno = 1;
       return dma;
-
     }
-
 }
 
 /*
@@ -215,9 +332,19 @@ DiasMesesAnos q2(char datainicial[], char datafinal[])
  */
 int q3(char *texto, char c, int isCaseSensitive)
 {
-    int qtdOcorrencias = -1;
+  int qtdOcorrencias = 0;
 
-    return qtdOcorrencias;
+  if (!isCaseSensitive){
+    capitalizarSting(texto);
+    c = capitalizarChar(c);
+  }
+
+  for (int i = 0; texto[i] != '\0' ; i++){
+    if (texto[i] == c){
+      qtdOcorrencias++;
+    }
+  }
+  return qtdOcorrencias;
 }
 
 /*
@@ -237,9 +364,37 @@ int q3(char *texto, char c, int isCaseSensitive)
  */
 int q4(char *strTexto, char *strBusca, int posicoes[30])
 {
-    int qtdOcorrencias = -1;
+  int qtdOcorrencias = 0;
+  int j = 0;
+  int registro = 0;
+  int tam, inicio, k;
 
-    return qtdOcorrencias;
+  while(strBusca[j] != '\0'){
+    tam++;
+    j++;
+  }
+
+  j = 0;
+
+  for(int i = 0; i < 30; i++){
+    if(strTexto[i] == strBusca[j]){
+      inicio = i;
+      k = i;
+      if(strTexto[k] == strBusca[j] && strTexto[k] != '\0' && strBusca[j] != '\0'){
+        k++;
+        j++;
+        if (j == tam - 1){
+          posicoes[registro] = inicio;
+          registro++;
+          posicoes[registro] = k;
+          registro++;
+          qtdOcorrencias++;
+        }
+      }
+    }
+  }
+  
+  return qtdOcorrencias;
 }
 
 /*

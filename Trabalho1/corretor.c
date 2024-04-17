@@ -33,12 +33,12 @@ int main()
 {
     //testSomar();
     //testFatorial();
-    testQ1();
-    testQ2();
-    testQ3();
+    //testQ1();
+    //testQ2();
+    //testQ3();
     testQ4();
-    testQ5();
-    testQ6();
+    //testQ5();
+    //testQ6();
 }
 
 void testSomar()
@@ -72,6 +72,8 @@ void testQ1()
     strcpy(str, "45/4/2014");
     printf("%d\n", q1(str) == 0);
     strcpy(str, "/9/2014");
+    printf("%d\n", q1(str) == 0);
+    strcpy(str, "as/as/wdef");
     printf("%d\n", q1(str) == 0);
 }
 
@@ -125,6 +127,19 @@ void testQ2()
     printf("%d\n", dma.retorno == 1);
     printf("%d\n", dma.qtdDias == 1);
     printf("%d\n", dma.qtdMeses == 1);
+    printf("%d\n", dma.qtdAnos == 0);
+
+    //teste 4
+    qtdDias = -1;
+    qtdMeses = -1;
+    qtdAnos = -1;
+
+    strcpy(datainicial, "31/03/2015");
+    strcpy(datafinal, "29/02/2016");
+    dma = q2(datainicial, datafinal);
+    printf("%d\n", dma.retorno == 1);
+    printf("%d\n", dma.qtdDias == 29);
+    printf("%d\n", dma.qtdMeses == 10);
     printf("%d\n", dma.qtdAnos == 0);
 }
 
