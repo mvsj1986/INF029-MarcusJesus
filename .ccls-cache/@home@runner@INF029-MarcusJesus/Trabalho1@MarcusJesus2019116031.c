@@ -24,6 +24,7 @@
 #include <stdio.h>
 #include "MarcusJesus2019116031.h" // Substitua pelo seu arquivo de header renomeado
 #include <stdlib.h>
+#include <string.h>
 
 /*
 ## função utilizada para testes  ##
@@ -367,33 +368,39 @@ int q4(char *strTexto, char *strBusca, int posicoes[30])
   int qtdOcorrencias = 0;
   int j = 0;
   int registro = 0;
-  int tam, inicio, k;
+  int tam = 0;
+  int inicio, k;
 
   while(strBusca[j] != '\0'){
     tam++;
     j++;
   }
 
-  j = 0;
+  // refazer a proxima parte...
 
   for(int i = 0; i < 30; i++){
     if(strTexto[i] == strBusca[j]){
       inicio = i;
       k = i;
-      if(strTexto[k] == strBusca[j] && strTexto[k] != '\0' && strBusca[j] != '\0'){
-        k++;
-        j++;
-        if (j == tam - 1){
-          posicoes[registro] = inicio;
-          registro++;
-          posicoes[registro] = k;
-          registro++;
-          qtdOcorrencias++;
+      for(j = 0; j < tam; j++){
+        if(strTexto[k] == strBusca[j] && strTexto[k] != '\0' && strBusca[j] != '\0'){
+          k++;
+          if(j == tam){
+            posicoes[registro] = inicio;
+            registro++;
+            posicoes[registro] = k;
+            registro++;
+            qtdOcorrencias++;
+          }
         }
       }
     }
   }
-  
+
+  for(int z = 0; z < 30 ; z++){
+    printf("%d\n", posicoes[z]);
+  }
+
   return qtdOcorrencias;
 }
 
@@ -408,8 +415,25 @@ int q4(char *strTexto, char *strBusca, int posicoes[30])
  */
 int q5(int num)
 {
+  int quebrado[10];
+  int i;
+  int j = 0;
 
-    return num;
+  for (i = 0; i < 10; i++)
+  {
+    quebrado[i] = -1;
+  }
+
+  for(i = 0; i < 10; i++){
+    quebrado[i] = num % 10;
+    num = num / 10;
+  }
+
+  while(quebrado[j] != -1){
+    num = num * 10 + quebrado[j];
+  }
+  
+  return num;
 }
 
 /*
