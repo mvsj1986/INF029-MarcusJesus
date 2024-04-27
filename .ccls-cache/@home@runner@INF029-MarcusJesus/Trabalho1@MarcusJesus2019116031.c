@@ -447,7 +447,8 @@ int q5(int num)
  */
 int q6(int numerobase, int numerobusca)
 {
-  int qtdOcorrencias, i, j, k;
+  int qtdOcorrencias = 0;
+  int i, j, k;
   int buscaTam = 0;
   int aux = 0;
   int base[10];
