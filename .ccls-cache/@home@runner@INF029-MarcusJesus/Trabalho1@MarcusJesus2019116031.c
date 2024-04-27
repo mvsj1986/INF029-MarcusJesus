@@ -138,7 +138,7 @@ DataQuebrada quebraData(char data[])
 int padronizarAno(int ano)
 {
   int nAno;
-  
+
   if (ano < 100) {
     nAno = ano + 2000;
   } else {
@@ -203,10 +203,11 @@ char capitalizarChar(char letra)
 
 void capitalizarSting(char texto[])
 {
+  int i;
   //97 e 122 - 32 (65 e 90)
-  for (int i = 0; i != '\0'; i++){
+  for (i = 0; i != '\0'; i++){
     if (texto[i] > 96 && texto[i] < 123){
-      texto[i] = capitalizarChar(texto[i]);
+        texto[i] = capitalizarChar(texto[i]);
     }
   }
 }
@@ -243,7 +244,7 @@ int q1(char data[])
 
   //verificar válidade para o mês.
   dataFim.valido = validadorData(dataFim);
-  
+
   return dataFim.valido;
 }
 
@@ -293,9 +294,9 @@ DiasMesesAnos q2(char datainicial[], char datafinal[])
           return dma;
         }
       }
-      
+
       dma.qtdAnos = dq2.iAno - dq1.iAno;
-      
+
       if(dq1.iMes > dq2.iMes){
         dma.qtdAnos--;
         dma.qtdMeses = 12 - (dq1.iMes - dq2.iMes);
@@ -315,7 +316,7 @@ DiasMesesAnos q2(char datainicial[], char datafinal[])
       } else {
         dma.qtdDias = dq2.iDia - dq1.iDia;
       }
-      
+
       dma.retorno = 1;
       return dma;
     }
@@ -334,13 +335,14 @@ DiasMesesAnos q2(char datainicial[], char datafinal[])
 int q3(char *texto, char c, int isCaseSensitive)
 {
   int qtdOcorrencias = 0;
+  int i;
 
   if (!isCaseSensitive){
     capitalizarSting(texto);
     c = capitalizarChar(c);
   }
 
-  for (int i = 0; texto[i] != '\0' ; i++){
+  for (i = 0; texto[i] != '\0' ; i++){
     if (texto[i] == c){
       qtdOcorrencias++;
     }
@@ -367,7 +369,7 @@ int q4(char *strTexto, char *strBusca, int posicoes[30])
 {
   int qtdOcorrencias = 0;
   int j = 0;
-  int registro = 0;
+  int reg = 0;
   int tam = 0;
   int inicio, k;
 
@@ -376,9 +378,9 @@ int q4(char *strTexto, char *strBusca, int posicoes[30])
     j++;
   }
 
-  // refazer a proxima parte...
+  int i, z;
 
-  for(int i = 0; i < 30; i++){
+  for(i = 0; i < 30; i++){
     if(strTexto[i] == strBusca[j]){
       inicio = i;
       k = i;
@@ -386,19 +388,15 @@ int q4(char *strTexto, char *strBusca, int posicoes[30])
         if(strTexto[k] == strBusca[j] && strTexto[k] != '\0' && strBusca[j] != '\0'){
           k++;
           if(j == tam){
-            posicoes[registro] = inicio;
-            registro++;
-            posicoes[registro] = k;
-            registro++;
+            posicoes[reg] = inicio;
+            reg++;
+            posicoes[reg] = k;
+            reg++;
             qtdOcorrencias++;
           }
         }
       }
     }
-  }
-
-  for(int z = 0; z < 30 ; z++){
-    printf("%d\n", posicoes[z]);
   }
 
   return qtdOcorrencias;
@@ -419,20 +417,22 @@ int q5(int num)
   int i;
   int j = 0;
 
-  for (i = 0; i < 10; i++)
-  {
+  for (i = 0; i < 10; i++){
     quebrado[i] = -1;
   }
 
   for(i = 0; i < 10; i++){
-    quebrado[i] = num % 10;
-    num = num / 10;
-  }
+    while(num != 0){
+      quebrado[i] = num % 10;
+      num = num / 10;
+      }
+    }
 
   while(quebrado[j] != -1){
     num = num * 10 + quebrado[j];
+    j++;
   }
-  
+
   return num;
 }
 
@@ -447,6 +447,56 @@ int q5(int num)
  */
 int q6(int numerobase, int numerobusca)
 {
-    int qtdOcorrencias;
-    return qtdOcorrencias;
+  int qtdOcorrencias, i, j, k;
+  int buscaTam = 0;
+  int aux = 0;
+  int base[10];
+  int busca[10];
+  int baseFim[10];
+  int buscaFim[10];
+
+  for(i = 0; i < 10; i++){
+    base[i] = -1;
+    busca[i] = -1;
+  }
+
+  for(i = 0; i < 10; i++){
+    if(numerobase != 0 && numerobusca != 0){
+      base[i] = numerobase % 10;
+      busca[i] = numerobusca % 10;
+      numerobase = numerobase / 10;
+      numerobusca = numerobusca / 10;
+    }
+  }
+
+  j = 0;
+  k = 0;
+  for(i = 10; i > 0; i--){
+    if(base[i] != -1){
+      baseFim[j] = base[i];
+      j++;
+    }
+    if(busca[i] != -1){
+      buscaFim[k] = busca[i];
+      buscaTam++;
+      k++;
+    }
+  }
+
+  j = 0;
+  for(i = 0; i < 10; i++){
+    if(baseFim[i] == buscaFim[j]){
+      k = i;
+      while(baseFim[k] == buscaFim[j] && aux < buscaTam){
+        aux++;
+        k++;
+        j++;
+      }
+      if(aux == buscaTam){
+        qtdOcorrencias++;
+      }
+    }
+  }
+
+  return qtdOcorrencias;
 }
